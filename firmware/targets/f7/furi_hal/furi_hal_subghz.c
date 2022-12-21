@@ -29,7 +29,7 @@ volatile FuriHalSubGhz furi_hal_subghz = {
     .state = SubGhzStateInit,
     .regulation = SubGhzRegulationTxRx,
     .preset = FuriHalSubGhzPresetIDLE,
-    .async_mirror_pin = 7,
+    .async_mirror_pin = LL_GPIO_PIN_7,
 };
 
 void furi_hal_subghz_set_async_mirror_pin(const GpioPin* pin) {
