@@ -112,3 +112,14 @@ Connect your device via ST-Link and run:
 - `scripts`         - Supplementary scripts and python libraries home
 
 Also pay attention to `ReadMe.md` files inside those directories.
+
+# Changes from Stock:
+- Removed Subghz restrictions (send restrictions, and keeloq restriction)
+- Added subghz and ir signal replication via gpio (allows using external antenas and emitters)
+- Custom subghz presets added
+- Jamming files added
+- Unlock, and lock sub files for vulnerable cars added ( CVE-2022-27254)
+- Added tamagotchi rom
+- Fixed unirf example playlist
+- Added tesla sub files ( two of them device specific)
+- Added shopping carts files
