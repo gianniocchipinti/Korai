@@ -23,7 +23,7 @@ ENV.AppendUnique(
         "-Wall",
         "-Wextra",
         "-Werror",
-        "-Wno-error-int-conversion",
+        "-Wno-int-conversion",
         "-Wno-address-of-packed-member",
         "-Wredundant-decls",
         "-Wdouble-promotion",
