@@ -3,7 +3,7 @@
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
 #include <gui/modules/empty_screen.h>
-#include <assets_icons.h>
+#include <m-string.h>
 #include <furi_hal_version.h>
 #include <furi_hal_region.h>
 #include <furi_hal_bt.h>
@@ -56,6 +56,53 @@ static DialogMessageButton compliance_screen(DialogsApp* dialogs, DialogMessage*
     return result;
 }
 
+static DialogMessageButton unleashed_info_screen(DialogsApp* dialogs, DialogMessage* message) {
+    DialogMessageButton result;
+
+    const char* screen_header = "Project Korai\n";
+
+    const char* screen_text = "Software provided as is\n"
+                              "Not for illegal use!";
+
+    dialog_message_set_header(message, screen_header, 0, 0, AlignLeft, AlignTop);
+    dialog_message_set_text(message, screen_text, 0, 26, AlignLeft, AlignTop);
+    result = dialog_message_show(dialogs, message);
+    dialog_message_set_header(message, NULL, 0, 0, AlignLeft, AlignTop);
+    dialog_message_set_text(message, NULL, 0, 0, AlignLeft, AlignTop);
+
+    return result;
+}
+
+static DialogMessageButton unleashed_info_screen2(DialogsApp* dialogs, DialogMessage* message) {
+    DialogMessageButton result;
+
+    const char* screen_text = "Custom plugins included\n"
+                              "For updates & info visit\n"
+                              "github.com/ankris812/Korai";
+
+    dialog_message_set_text(message, screen_text, 0, 0, AlignLeft, AlignTop);
+    result = dialog_message_show(dialogs, message);
+    dialog_message_set_text(message, NULL, 0, 0, AlignLeft, AlignTop);
+
+    return result;
+}
+
+static DialogMessageButton unleashed_info_screen3(DialogsApp* dialogs, DialogMessage* message) {
+    DialogMessageButton result;
+
+    const char* screen_text = "Me, flipper devices \n"
+                              "or any other related\n"
+                              "to this firmware\n"
+                              "wont be responsible\n" 
+                              "of what you do";
+
+    dialog_message_set_text(message, screen_text, 0, 0, AlignLeft, AlignTop);
+    result = dialog_message_show(dialogs, message);
+    dialog_message_set_text(message, NULL, 0, 0, AlignLeft, AlignTop);
+
+    return result;
+}
+
 static DialogMessageButton icon1_screen(DialogsApp* dialogs, DialogMessage* message) {
     DialogMessageButton result;
 
@@ -78,11 +125,11 @@ static DialogMessageButton icon2_screen(DialogsApp* dialogs, DialogMessage* mess
 
 static DialogMessageButton hw_version_screen(DialogsApp* dialogs, DialogMessage* message) {
     DialogMessageButton result;
-    FuriString* buffer;
-    buffer = furi_string_alloc();
+    string_t buffer;
+    string_init(buffer);
     const char* my_name = furi_hal_version_get_name_ptr();
 
-    furi_string_cat_printf(
+    string_cat_printf(
         buffer,
         "%d.F%dB%dC%d %s:%s %s\n",
         furi_hal_version_get_hw_version(),
@@ -93,36 +140,36 @@ static DialogMessageButton hw_version_screen(DialogsApp* dialogs, DialogMessage*
         furi_hal_region_get_name(),
         my_name ? my_name : "Unknown");
 
-    furi_string_cat_printf(buffer, "Serial Number:\n");
+    string_cat_printf(buffer, "Serial Number:\n");
     const uint8_t* uid = furi_hal_version_uid();
     for(size_t i = 0; i < furi_hal_version_uid_size(); i++) {
-        furi_string_cat_printf(buffer, "%02X", uid[i]);
+        string_cat_printf(buffer, "%02X", uid[i]);
     }
 
     dialog_message_set_header(message, "HW Version Info:", 0, 0, AlignLeft, AlignTop);
-    dialog_message_set_text(message, furi_string_get_cstr(buffer), 0, 13, AlignLeft, AlignTop);
+    dialog_message_set_text(message, string_get_cstr(buffer), 0, 13, AlignLeft, AlignTop);
     result = dialog_message_show(dialogs, message);
     dialog_message_set_text(message, NULL, 0, 0, AlignLeft, AlignTop);
     dialog_message_set_header(message, NULL, 0, 0, AlignLeft, AlignTop);
-    furi_string_free(buffer);
+    string_clear(buffer);
 
     return result;
 }
 
 static DialogMessageButton fw_version_screen(DialogsApp* dialogs, DialogMessage* message) {
     DialogMessageButton result;
-    FuriString* buffer;
-    buffer = furi_string_alloc();
+    string_t buffer;
+    string_init(buffer);
     const Version* ver = furi_hal_version_get_firmware_version();
     const BleGlueC2Info* c2_ver = NULL;
 #ifdef SRV_BT
     c2_ver = ble_glue_get_c2_info();
 #endif
 
-    if(!ver) { //-V1051
-        furi_string_cat_printf(buffer, "No info\n");
+    if(!ver) {
+        string_cat_printf(buffer, "No info\n");
     } else {
-        furi_string_cat_printf(
+        string_cat_printf(
             buffer,
             "%s [%s]\n%s%s [%s] %s\n[%d] %s",
             version_get_version(ver),
@@ -136,16 +183,19 @@ static DialogMessageButton fw_version_screen(DialogsApp* dialogs, DialogMessage*
     }
 
     dialog_message_set_header(message, "FW Version Info:", 0, 0, AlignLeft, AlignTop);
-    dialog_message_set_text(message, furi_string_get_cstr(buffer), 0, 13, AlignLeft, AlignTop);
+    dialog_message_set_text(message, string_get_cstr(buffer), 0, 13, AlignLeft, AlignTop);
     result = dialog_message_show(dialogs, message);
     dialog_message_set_text(message, NULL, 0, 0, AlignLeft, AlignTop);
     dialog_message_set_header(message, NULL, 0, 0, AlignLeft, AlignTop);
-    furi_string_free(buffer);
+    string_clear(buffer);
 
     return result;
 }
 
 const AboutDialogScreen about_screens[] = {
+    unleashed_info_screen,
+    unleashed_info_screen3,
+    unleashed_info_screen2,
     product_screen,
     compliance_screen,
     address_screen,
