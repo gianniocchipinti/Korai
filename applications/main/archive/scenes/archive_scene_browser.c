@@ -45,6 +45,7 @@ static void archive_run_in_app(ArchiveBrowserView* browser, ArchiveFile_t* selec
         if(param != NULL) {
             param++;
         }
+        
         status = loader_start(loader, flipper_app_name[selected->type], param);
     } else {
         status = loader_start(
