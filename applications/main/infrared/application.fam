@@ -8,6 +8,7 @@ App(
         "gui",
         "dialogs",
     ],
+    fap_category="Main",
     provides=["infrared_start"],
     icon="A_Infrared_14",
     stack_size=3 * 1024,
