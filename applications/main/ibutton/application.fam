@@ -8,6 +8,7 @@ App(
         "gui",
         "dialogs",
     ],
+    fap_category="Main",
     provides=["ibutton_start"],
     icon="A_iButton_14",
     stack_size=2 * 1024,
