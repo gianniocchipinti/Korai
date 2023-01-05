@@ -61,8 +61,7 @@ const SubGhzProtocolEncoder subghz_protocol_ido_encoder = {
 const SubGhzProtocol subghz_protocol_ido = {
     .name = SUBGHZ_PROTOCOL_IDO_NAME,
     .type = SubGhzProtocolTypeDynamic,
-    .flag = SubGhzProtocolFlag_433 | SubGhzProtocolFlag_AM | SubGhzProtocolFlag_Decodable |
-            SubGhzProtocolFlag_Save,
+    .flag = SubGhzProtocolFlag_433 | SubGhzProtocolFlag_AM | SubGhzProtocolFlag_Decodable,
 
     .decoder = &subghz_protocol_ido_decoder,
     .encoder = &subghz_protocol_ido_encoder,
