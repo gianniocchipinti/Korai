@@ -21,7 +21,6 @@
 #include "gate_tx.h"
 #include "raw.h"
 #include "linear.h"
-#include "linear_delta3.h"
 #include "secplus_v2.h"
 #include "secplus_v1.h"
 #include "megacode.h"
@@ -40,4 +39,12 @@
 #include "smc5326.h"
 #include "holtek_ht12x.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern const SubGhzProtocolRegistry subghz_protocol_registry;
+
+#ifdef __cplusplus
+}
+#endif
