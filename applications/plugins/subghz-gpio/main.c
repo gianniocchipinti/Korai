@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "cc1101.h"
-#include "stm32wb55.h"
+#include "stm32wbxx.h"
 #include "u8g2.h"
 #include "fatfs.h"
 #include "freertos.h"
