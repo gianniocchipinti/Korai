@@ -1,238 +1,187 @@
-#include "stm32wbxx.h"
-#include "u8g2.h"
-#include "FreeRTOS.h"
-#include "task.h"
+#include <stdio.h>
+#include <string.h>
 #include "cc1101.h"
+#include "stm32wb55.h"
+#include "u8g2.h"
 #include "fatfs.h"
+#include "freertos.h"
 
-#define NUM_FREQUENCIES 6
-const float frequencies[NUM_FREQUENCIES] =
-  { 902.75, 903.00, 903.25, 903.50, 903.75, 904.00 };
+// Global variables for storing the selected frequency, file name, and recording status
+int frequency;
+char file_name[256];
+bool recording;
 
-// Task to handle the CC1101 frequency selection menu
-void
-frequency_menu_task (void *pvParameters)
+// Function prototypes
+void select_frequency();
+void send_file();
+void read_signals();
+void save_signals();
+
+int main()
 {
-  // Set up the U8g2 library
-  u8g2_t u8g2;
-  u8g2_Setup_stm32_hw_spi_8080 (&u8g2, U8G2_R0, u8g2_cb_stm32_hw_spi_8080);
-  u8g2_InitDisplay (&u8g2);
-  u8g2_SetPowerSave (&u8g2, 0);
+    // Initialize the CC1101 chip and STM32WB55
+    cc1101_init();
+    stm32wb55_init();
 
-  while (1)
+    // Initialize the U8G2 library and display the main menu
+    u8g2_t u8g2;
+    u8g2_init(&u8g2, ...); // Initialize the display
+    while (1)
     {
-      // Check if the CC1101 chip is connected
-      int check_cc1101_connection ()
-      {
-	// Set up the U8g2 library
-	u8g2_t u8g2;
-	u8g2_Setup_stm32_hw_spi_8080 (&u8g2, U8G2_R0,
-				      u8g2_cb_stm32_hw_spi_8080);
-	u8g2_InitDisplay (&u8g2);
-	u8g2_SetPowerSave (&u8g2, 0);
+        select_frequency();
+        u8g2_clear_buffer(&u8g2);
+        u8g2_draw_string(&u8g2, 0, 0, "Frequency: %d", frequency);
+        u8g2_draw_string(&u8g2, 0, 10, "1. Send");
+        u8g2_draw_string(&u8g2, 0, 20, "2. Read");
+        u8g2_send_buffer(&u8g2);
 
-	// Check if the CC1101 chip is connected
-	if (cc1101_check_connection ())
-	  {
-	    return 1;
-	  }
+        // Wait for the user to make a selection
+        int choice = get_user_input();
+        if (choice == 1)
+        {
+            send_file();
+        }
+        else if (choice == 2)
+        {
+            read_signals();
+        }
+    }
 
-	// Display an error message
-	u8g2_ClearBuffer (&u8g2);
-	u8g2_DrawStr (&u8g2, 0, 10, "Error: CC1101 chip not found.");
-	u8g2_DrawStr (&u8g2, 0, 30, "Press any key to try again.");
-	u8g2_SendBuffer (&u8g2);
+    return 0;
+}
 
-	// Wait for user to press a key
-	while (u8g2_UserInterfaceInputValue
-	       (&u8g2, "", "", "", "", 0, 0, 0, 0) != 0);
+void select_frequency()
+{
+    // Display a menu with a list of frequencies and allow the user to select one
+    u8g2_clear_buffer(&u8g2);
+    u8g2_draw_string(&u8g2, 0, 0, "Select a frequency:");
+    u8g2_draw_string(&u8g2, 0, 10, "1. 433 MHz");
+    u8g2_draw_string(&u8g2, 0, 20, "2. 868 MHz");
+    // Add more options for other frequencies as needed
+    u8g2_send_buffer(&u8g2);
+    int choice = get_user_input();
+    if (choice == 1)
+    {
+        frequency = 433;
+    }
+    else if (choice == 2)
+    {
+        frequency = 868;
+    }
+    // Set the frequency on the CC1101 chip
+    cc1101_set_frequency(frequency);
+}
 
-	// Try again
-	return check_cc1101_connection ();
-      }
+void send_file()
+{
+    // Use the FatFs and FreeRTOS libraries to allow the user to select a file from the internal storage
+    FRESULT res;
+    DIR dir;
+    static FILINFO fno;
 
-// Task to handle the CC1101 frequency selection menu
-      void frequency_menu_task (void *pvParameters)
-      {
-	// Set up the U8g2 library
-	u8g2_t u8g2;
-	u8g2_Setup_stm32_hw_spi_8080 (&u8g2, U8G2_R0,
-				      u8g2_cb_stm32_hw_spi_8080);
-	u8g2_InitDisplay (&u8g2);
-	u8g2_SetPowerSave (&u8g2, 0);
+    // Select a file using the FatFs and FreeRTOS libraries
+    strcpy(file_name, ""); // Clear the file name
+    res = select_file_from_storage(&dir, &fno, file_name);
+    if (res != FR_OK)
+    {
+        // An error occurred while trying to select a file
+        return;
+    }
 
-	while (1)
-	  {
-	    // Draw the frequency selection menu
-	    u8g2_ClearBuffer (&u8g2);
-	    u8g2_DrawStr (&u8g2, 0, 10, "Select frequency:");
-	    for (int i = 0; i < NUM_FREQUENCIES; i++)
-	      {
-		char str[10];
-		sprintf (str, "%.2f MHz", frequencies[i]);
-		u8g2_DrawStr (&u8g2, 0, 30 + i * 10, str);
-	      }
-	    u8g2_SendBuffer (&u8g2);
+    // Open the file and read its contents into a buffer
+    FIL file;
+    res = f_open(&file, file_name, FA_READ);
+    if (res != FR_OK)
+    {
+        // An error occurred while trying to open the file
+        return;
+    }
+    char buffer[1024]; // Use a buffer to hold the file contents
+    UINT bytes_read;
+    f_read(&file, buffer, sizeof(buffer), &bytes_read);
+    f_close(&file);
 
-	    // Wait for user to make a selection
-	    int selection =
-	      u8g2_UserInterfaceSelectionList (&u8g2, ">", 0, 0, "", 0);
-	    if (selection >= 0 && selection < NUM_FREQUENCIES)
-	      {
-		// Set the CC1101 frequency
-		cc1101_set_frequency (frequencies[selection]);
+        // Transmit the contents of the file using the CC1101 chip
+    cc1101_transmit(buffer, bytes_read);
 
-// Draw the main menu
-		u8g2_ClearBuffer (&u8g2);
-		u8g2_DrawStr (&u8g2, 0, 10, "Select action:");
-		u8g2_DrawStr (&u8g2, 0, 30, "1. Send");
-		u8g2_DrawStr (&u8g2, 0, 40, "2. Receive");
-		u8g2_SendBuffer (&u8g2);
+    // Display a message to the user indicating that the transmission is complete
+    u8g2_clear_buffer(&u8g2);
+    u8g2_draw_string(&u8g2, 0, 0, "Transmission complete.");
+    u8g2_send_buffer(&u8g2);
+    delay(1000); // Wait for 1 second before returning to the main menu
+}
 
-// Wait for user to make a selection
-		int action =
-		  u8g2_UserInterfaceSelectionList (&u8g2, ">", 0, 0, "", 0);
-		if (action == 0)
-		  {
-		    // Set the CC1101 to transmit mode
-		    cc1101_set_mode (CC1101_MODE_TX);
+void read_signals()
+{
+    // Set the recording flag and start reading signals
+    recording = true;
+    while (recording)
+    {
+        // Read a signal using the CC1101 chip and save it to a buffer
+        char buffer[1024];
+        int bytes_read = cc1101_receive(buffer, sizeof(buffer));
+        // Add the signal to a list of recorded signals
+        add_to_signal_list(buffer, bytes_read);
 
-		    // Select the file to send
-		    u8g2_ClearBuffer (&u8g2);
-		    u8g2_DrawStr (&u8g2, 0, 10, "Select file to send:");
-		    u8g2_SendBuffer (&u8g2);
-		    char file_name[256];
-		    if (u8g2_UserInterfaceFileList
-			(&u8g2, ">", "", file_name, sizeof (file_name)) == 0)
-		      {
-			// Set up a buffer to hold the data from the file
-			uint8_t buffer[64];
+        // Check if the user has requested to stop recording or save the signals
+        int input = get_user_input();
+        if (input == SAVE_SIGNALS)
+        {
+            save_signals();
+            recording = false;
+        }
+        else if (input == RETURN_WITHOUT_SAVING)
+        {
+            recording = false;
+        }
+    }
+}
 
-			// Set up the FATFS filesystem
-			static FATFS fs;
-			if (f_mount (&fs, "", 0) != FR_OK)
-			  {
-			    // an error occurred while mounting the filesystem
-			    return;
-			  }
 
-			// Open the file
-			FIL file;
-			if (f_open (&file, file_name, FA_READ) != FR_OK)
-			  {
-			    // an error occurred while opening the file
-			    return;
-			  }
+void save_signals()
+{
+    // Use the FatFs library to create a new file and write the recorded signals to it
+    FRESULT res;
+    FIL file;
+    res = f_open(&file, "signals.txt", FA_CREATE_ALWAYS | FA_WRITE);
+    if (res != FR_OK)
+    {
+        // An error occurred while trying to create the file
+        return;
+    }
 
-			// Read the data from the file and transmit it via the CC1101 chip
-			UINT bytes_read;
-			while (f_read
-			       (&file, buffer, sizeof (buffer),
-				&bytes_read) == FR_OK)
-			  {
-			    cc1101_send_packet (buffer, bytes_read);
-			  }
+    // Write the recorded signals to the file
+    int bytes_written;
+    f_write(&file, recorded_signals, strlen(recorded_signals), &bytes_written);
+    f_close(&file);
+}
 
-			// Close the file
-			f_close (&file);
-		      }
+int get_user_input()
+{
+    // Poll the button inputs and return the corresponding value
+    if (button_pressed(BUTTON_OK))
+    {
+        return SAVE_SIGNALS;
+    }
+    else if (button_long_pressed(BUTTON_RETURN))
+    {
+        return RETURN_WITHOUT_SAVING;
+    }
+    // Add additional checks for other buttons as needed
+    return NO_INPUT;
+}
 
-		    // Return to the frequency selection menu
-		    vTaskDelay (1000);
-		  }
-		else if (action == 1)
-		  {
-		    // Set the CC1101 to receive mode
-		    cc1101_set_mode (CC1101_MODE_RX);
-
-// Select the file to save the received data to
-		    u8g2_ClearBuffer (&u8g2);
-		    u8g2_DrawStr (&u8g2, 0, 10,
-				  "Enter file name to save received data to:");
-		    u8g2_SendBuffer (&u8g2);
-		    char file_name[256];
-		    if (u8g2_UserInterfaceInputValue
-			(&u8g2, ">", "", "", file_name, 0, 0, 0,
-			 sizeof (file_name)) == 0)
-		      {
-			// Set up a buffer to hold the received data
-			uint8_t buffer[64];
-// Set up the FATFS filesystem
-			static FATFS fs;
-			if (f_mount (&fs, "", 0) != FR_OK)
-			  {
-			    // an error occurred while mounting the filesystem
-			    return;
-			  }
-
-			// Create the file
-			FIL file;
-			if (f_open
-			    (&file, file_name,
-			     FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
-			  {
-			    // an error occurred while creating the file
-			    return;
-			  }
-
-			// Set up a flag to keep track of whether the receive operation has been cancelled
-			int receive_cancelled = 0;
-
-			// Receive data via the CC1101 chip and save it to the file
-			while (!receive_cancelled)
-			  {
-			    // Check if the user has pressed a key to cancel the receive operation
-			    if (u8g2_UserInterfaceInputValue
-				(&u8g2, "", "", "", "", 0, 0, 0, 0) != 0)
-			      {
-				receive_cancelled = 1;
-				continue;
-			      }
-
-			    // Check if data is available to be received
-			    int packet_size =
-			      cc1101_receive_packet (buffer, sizeof (buffer));
-			    if (packet_size > 0)
-			      {
-				// Write the received data to the file
-				UINT bytes_written;
-				if (f_write
-				    (&file, buffer, packet_size,
-				     &bytes_written) != FR_OK
-				    || bytes_written != packet_size)
-				  {
-				    // an error occurred while writing to the file
-				    f_close (&file);
-				    return;
-				  }
-			      }
-			  }
-
-			// Close the file
-			f_close (&file);
-		      }
-
-// Return to the frequency selection menu
-		    vTaskDelay (1000);
-		  }
-	      }
-	  }
-
-	int main ()
-	{
-	  // Initialize the CC1101 chip
-	  cc1101_init ();
-
-// Create the frequency selection menu task
-	  xTaskCreate (frequency_menu_task, "Frequency Menu",
-		       configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1,
-		       NULL);
-
-// Start the FreeRTOS scheduler
-	  vTaskStartScheduler ();
-
-// This should never be reached
-	  while (1);
-
-	  return 0;
-	}
+bool button_long_pressed(int button)
+{
+    // Check the input of the specified button and return true if it is pressed for a long time, false if not
+    if (button == BUTTON_RETURN)
+    {
+        if (GPIO_ReadInputDataBit(GPIO_RETURN) == Bit_SET)
+        {
+            delay(1000); // Wait for 1 second to detect a long press
+            return (GPIO_ReadInputDataBit(GPIO_RETURN) == Bit_SET);
+        }
+    }
+    // Add checks for other buttons as needed
+    return false;
+}
