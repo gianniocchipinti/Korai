@@ -1,0 +1,6 @@
+App(
+    appid="gpio_cc1101",
+    name="cc1101 gpio app",
+    apptype=FlipperAppType.EXTERNAL,
+    fap_category="Tools",
+)
