@@ -1,13 +1,14 @@
 App(
     appid="ibutton",
     name="iButton",
-    apptype=FlipperAppType.APP,
+    apptype=FlipperAppType.EXTERNAL,
     entry_point="ibutton_app",
     cdefines=["APP_IBUTTON"],
     requires=[
         "gui",
         "dialogs",
     ],
+    fap_category="Main",
     provides=["ibutton_start"],
     icon="A_iButton_14",
     stack_size=2 * 1024,
