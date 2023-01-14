@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -201,15 +200,6 @@ uint32_t infrared_get_protocol_frequency(InfraredProtocol protocol);
  * \return      duty cycle
  */
 float infrared_get_protocol_duty_cycle(InfraredProtocol protocol);
-
-/**
- * Get the minimum count of signal repeats for the selected protocol
- *
- * \param[in]   protocol    - protocol to get the repeat count from
- *
- * \return      repeat count
- */
-size_t infrared_get_protocol_min_repeat_count(InfraredProtocol protocol);
 
 #ifdef __cplusplus
 }

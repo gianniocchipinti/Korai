@@ -1,5 +1,9 @@
-#include "infrared_protocol_kaseikyo_i.h"
-#include <core/check.h>
+#include "infrared.h"
+#include "infrared_protocol_defs_i.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <furi.h>
+#include "../infrared_i.h"
 
 InfraredMessage* infrared_decoder_kaseikyo_check_ready(void* ctx) {
     return infrared_common_decoder_check_ready(ctx);
@@ -34,7 +38,7 @@ bool infrared_decoder_kaseikyo_interpret(InfraredCommonDecoder* decoder) {
 }
 
 void* infrared_decoder_kaseikyo_alloc(void) {
-    return infrared_common_decoder_alloc(&infrared_protocol_kaseikyo);
+    return infrared_common_decoder_alloc(&protocol_kaseikyo);
 }
 
 InfraredMessage* infrared_decoder_kaseikyo_decode(void* decoder, bool level, uint32_t duration) {

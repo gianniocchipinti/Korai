@@ -1,7 +1,9 @@
-#include "infrared_protocol_rc5_i.h"
-
-#include <stdlib.h>
-#include <core/check.h>
+#include <core/memmgr.h>
+#include "infrared.h"
+#include "common/infrared_common_i.h"
+#include "infrared_protocol_defs_i.h"
+#include <stdint.h>
+#include "../infrared_i.h"
 
 typedef struct InfraredEncoderRC5 {
     InfraredCommonEncoder* common_encoder;
@@ -39,7 +41,7 @@ InfraredStatus infrared_encoder_rc5_encode(void* encoder_ptr, uint32_t* duration
 
 void* infrared_encoder_rc5_alloc(void) {
     InfraredEncoderRC5* encoder = malloc(sizeof(InfraredEncoderRC5));
-    encoder->common_encoder = infrared_common_encoder_alloc(&infrared_protocol_rc5);
+    encoder->common_encoder = infrared_common_encoder_alloc(&protocol_rc5);
     encoder->toggle_bit = false;
     return encoder;
 }
