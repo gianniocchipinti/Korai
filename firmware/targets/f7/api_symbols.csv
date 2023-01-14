@@ -3235,4 +3235,3 @@ Variable,+,usb_hid,FuriHalUsbInterface,
 Variable,+,usb_hid_u2f,FuriHalUsbInterface,
 Variable,+,usbd_devfs,const usbd_driver,
 Variable,+,vibro_gpio,const GpioPin,
-
