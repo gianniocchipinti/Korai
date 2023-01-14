@@ -5,19 +5,6 @@
 static const NotificationSequence subghs_sequence_rx = {
     &message_green_255,
 
-    &message_vibro_on,
-    &message_note_c6,
-    &message_delay_50,
-    &message_sound_off,
-    &message_vibro_off,
-
-    &message_delay_50,
-    NULL,
-};
-
-static const NotificationSequence subghs_sequence_rx_locked = {
-    &message_green_255,
-
     &message_display_backlight_on,
 
     &message_vibro_on,
@@ -26,9 +13,19 @@ static const NotificationSequence subghs_sequence_rx_locked = {
     &message_sound_off,
     &message_vibro_off,
 
-    &message_delay_500,
+    NULL,
+};
 
-    &message_display_backlight_off,
+static const NotificationSequence subghs_sequence_rx_locked = {
+    &message_green_255,
+
+
+    &message_vibro_on,
+    &message_note_c6,
+    &message_delay_50,
+    &message_sound_off,
+    &message_vibro_off,
+
     NULL,
 };
 
