@@ -64,7 +64,6 @@ static DialogMessageButton korai_info_screen(DialogsApp* dialogs, DialogMessage*
                                 "Play with caution.\n"
                                 "I wont be responisble";
 
-    dialog_message_set_header(message, screen_header, 0, 0, AlignLeft, AlignTop);
     dialog_message_set_text(message, screen_text, 0, 26, AlignLeft, AlignTop);
     result = dialog_message_show(dialogs, message);
     dialog_message_set_header(message, NULL, 0, 0, AlignLeft, AlignTop);
