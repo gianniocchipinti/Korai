@@ -59,10 +59,10 @@ static DialogMessageButton compliance_screen(DialogsApp* dialogs, DialogMessage*
 static DialogMessageButton korai_info_screen(DialogsApp* dialogs, DialogMessage* message) {
     DialogMessageButton result;
 
-    const char* screen_header = "Korai Firmware\n";
-
-    const char* screen_text = "Play with caution.\n"
-                              "I wont be responisble";
+    const char* screen_text =   "Korai Firmware\n"
+                                "\n"
+                                "Play with caution.\n"
+                                "I wont be responisble";
 
     dialog_message_set_header(message, screen_header, 0, 0, AlignLeft, AlignTop);
     dialog_message_set_text(message, screen_text, 0, 26, AlignLeft, AlignTop);
