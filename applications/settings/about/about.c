@@ -80,7 +80,15 @@ static DialogMessageButton korai_info_screen2(DialogsApp* dialogs, DialogMessage
                               "github.com/ankris812/korai \n"
                               "For updates & info visit\n"
                               "patreon.com/zeusricote";
+                             
+    dialog_message_set_header(message, screen_header, 0, 0, AlignLeft, AlignTop);
+    dialog_message_set_text(message, screen_text, 0, 26, AlignLeft, AlignTop);
+    result = dialog_message_show(dialogs, message);
+    dialog_message_set_header(message, NULL, 0, 0, AlignLeft, AlignTop);
+    dialog_message_set_text(message, NULL, 0, 0, AlignLeft, AlignTop);
 
+    return result;
+}
 static DialogMessageButton icon1_screen(DialogsApp* dialogs, DialogMessage* message) {
     DialogMessageButton result;
 
