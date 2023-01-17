@@ -3235,3 +3235,8 @@ Variable,+,usb_hid,FuriHalUsbInterface,
 Variable,+,usb_hid_u2f,FuriHalUsbInterface,
 Variable,+,usbd_devfs,const usbd_driver,
 Variable,+,vibro_gpio,const GpioPin,
+Function,+,storage_file_decrypt,FS_Error,File*
+Function,+,storage_file_encrypt,FS_Error,"Storage*, const char*, uint8_t"
+Function,+,storage_file_is_decrypted,_Bool,File*
+Function,+,storage_file_is_encrypted,_Bool,"Storage*, const char*"
+Function,+,storage_file_secured,_Bool,File*
