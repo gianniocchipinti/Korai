@@ -735,6 +735,26 @@ bool storage_file_is_dir(File* file) {
     return (file->type == FileTypeOpenDir);
 }
 
+bool storage_file_is_encrypted(Storage* storage, const char* path) {
+    Stream* fstream = file_stream_alloc(storage);
+    if(!file_stream_open(fstream, path, FSAM_READ, FSOM_OPEN_EXISTING)) {
+        stream_free(fstream);
+        return false;
+    };
+    uint8_t magic_buf[encryption_magic_size];
+    stream_read(fstream, magic_buf, encryption_magic_size);
+    stream_free(fstream);
+    return memcmp(&encryption_magic_bytes, &magic_buf, encryption_magic_size) == 0;
+}
+
+bool storage_file_is_decrypted(File* file) {
+    return file->encryption && file->encryption->decrypted;
+}
+
+bool storage_file_secured(File* file) {
+    return file->encryption;
+}
+
 void storage_file_free(File* file) {
     if(storage_file_is_open(file)) {
         if(storage_file_is_dir(file)) {
@@ -745,6 +765,7 @@ void storage_file_free(File* file) {
     }
 
     FURI_LOG_T(TAG, "File/Dir %p free", (void*)((uint32_t)file - SRAM_BASE));
+    free(file->encryption);
     free(file);
 }
 
