@@ -259,6 +259,29 @@ bool storage_file_exists(Storage* storage, const char* path) {
     return exist;
 }
 
+FS_Error storage_file_decrypt(File* file) {
+    if(storage_file_is_decrypted(file)) {
+        return FSE_OK;
+    }
+
+    S_FILE_API_PROLOGUE;
+    S_API_PROLOGUE;
+    S_API_DATA_FILE;
+    S_API_MESSAGE(StorageCommandFileDecrypt);
+    S_API_EPILOGUE;
+    return S_RETURN_ERROR;
+}
+
+FS_Error storage_file_encrypt(Storage* storage, const char* path, uint8_t key_slot) {
+    S_API_PROLOGUE;
+
+    SAData data = {.encryption = {.path = path, .key_slot = key_slot}};
+
+    S_API_MESSAGE(StorageCommandFileEncrypt);
+    S_API_EPILOGUE;
+    return S_RETURN_ERROR;
+}
+
 /****************** DIR ******************/
 
 static bool storage_dir_open_internal(File* file, const char* path) {
