@@ -33,6 +33,7 @@ typedef enum {
     FSE_INTERNAL, /**< Internal error */
     FSE_NOT_IMPLEMENTED, /**< Function not implemented */
     FSE_ALREADY_OPEN, /**< File/Dir already opened */
+    FSE_NO_SPACE,
 } FS_Error;
 
 /** FileInfo flags */
