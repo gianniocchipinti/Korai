@@ -650,6 +650,35 @@ bool nfc_device_load_mifare_df_data(FlipperFormat* file, NfcDevice* dev) {
     return parsed;
 }
 
+static bool nfc_device_save_bank_card_data(FlipperFormat* file, NfcDevice* dev) {
+    bool saved = false;
+    EmvData* data = &dev->dev_data.emv_data;
+    uint32_t data_temp = 0;
+
+    do {
+        // Write Bank card specific data
+        if(!flipper_format_write_comment_cstr(file, "Bank card specific data")) break;
+        if(!flipper_format_write_hex(file, "AID", data->aid, data->aid_len)) break;
+        if(!flipper_format_write_string_cstr(file, "Name", data->name)) break;
+        if(!flipper_format_write_hex(file, "Number", data->number, data->number_len)) break;
+        if(data->exp_mon) {
+            uint8_t exp_data[2] = {data->exp_mon, data->exp_year};
+            if(!flipper_format_write_hex(file, "Exp data", exp_data, sizeof(exp_data))) break;
+        }
+        if(data->country_code) {
+            data_temp = data->country_code;
+            if(!flipper_format_write_uint32(file, "Country code", &data_temp, 1)) break;
+        }
+        if(data->currency_code) {
+            data_temp = data->currency_code;
+            if(!flipper_format_write_uint32(file, "Currency code", &data_temp, 1)) break;
+        }
+        saved = true;
+    } while(false);
+
+    return saved;
+}
+
 // Leave for backward compatibility
 bool nfc_device_load_bank_card_data(FlipperFormat* file, NfcDevice* dev) {
     bool parsed = false;
