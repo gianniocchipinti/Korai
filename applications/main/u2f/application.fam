@@ -8,7 +8,7 @@ App(
         "gui",
         "dialogs",
     ],
-    FAP_CATEGORY="Main",
+    fap_category="Main",
     stack_size=2 * 1024,
     order=80,
     fap_libs=["assets"],
