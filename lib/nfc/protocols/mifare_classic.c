@@ -13,7 +13,9 @@
 #define MF_CLASSIC_WRITE_BLOCK_CMD (0xA0)
 
 const char* mf_classic_get_type_str(MfClassicType type) {
-    if(type == MfClassicType1k) {
+    if(type == MfClassicTypeMini) {
+        return "MIFARE Mini 0.3K";
+    } else if(type == MfClassicType1k) {
         return "MIFARE Classic 1K";
     } else if(type == MfClassicType4k) {
         return "MIFARE Classic 4K";
@@ -86,7 +88,7 @@ uint8_t mf_classic_get_total_sectors_num(MfClassicType type) {
 
 uint16_t mf_classic_get_total_block_num(MfClassicType type) {
     if(type == MfClassicTypeMini) {
-        return "MIFARE Mini 0.3K";
+        return 20;
     } else if(type == MfClassicType1k) {
         return 64;
     } else if(type == MfClassicType4k) {
