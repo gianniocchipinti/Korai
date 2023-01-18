@@ -7,7 +7,7 @@ App(
         #"ibutton",
         #"infrared",
         #"lfrfid",
-        "nfc",
+        #"nfc",
         "subghz",
         #"bad_usb",
         #"u2f",
