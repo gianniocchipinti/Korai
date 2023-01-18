@@ -1,7 +1,0 @@
-
-App(
-    appid="SubGpio",
-    name="Sub-Gpio Test",
-    apptype=FlipperAppType.EXTERNAL,
-    fap_category="Tools",
-)
