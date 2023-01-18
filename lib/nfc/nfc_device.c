@@ -1088,7 +1088,7 @@ bool nfc_device_save(NfcDevice* dev, const char* dev_name) {
         if(!flipper_format_write_header_cstr(file, nfc_file_header, nfc_file_version)) break;
         // Write nfc device type
         if(!flipper_format_write_comment_cstr(
-               file, "Nfc device type can be UID, Mifare Ultralight, Mifare Classic"))
+               file, "Nfc device type can be UID, Mifare Ultralight, Mifare Classic, Bank Card"))
             break;
         nfc_device_prepare_format_string(dev, temp_str);
         if(!flipper_format_write_string(file, "Device type", temp_str)) break;
@@ -1105,6 +1105,8 @@ bool nfc_device_save(NfcDevice* dev, const char* dev_name) {
             if(!nfc_device_save_mifare_ul_data(file, dev)) break;
         } else if(dev->format == NfcDeviceSaveFormatMifareDesfire) {
             if(!nfc_device_save_mifare_df_data(file, dev)) break;
+        } else if(dev->format == NfcDeviceSaveFormatBankCard) {
+            if(!nfc_device_save_bank_card_data(file, dev)) break;
         } else if(dev->format == NfcDeviceSaveFormatMifareClassic) {
             // Save data
             if(!nfc_device_save_mifare_classic_data(file, dev)) break;
