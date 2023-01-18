@@ -3,7 +3,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "cc1101.h"
-#include "ff.h"
+#include "fatfs.h"
 
 #define NUM_FREQUENCIES 6
 const float frequencies[NUM_FREQUENCIES] = { 902.75, 903.00, 903.25, 903.50, 903.75, 904.00 };
