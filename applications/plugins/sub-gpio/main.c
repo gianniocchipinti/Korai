@@ -68,6 +68,10 @@ void select_frequency()
     {
         frequency = 868;
     }
+    else
+    {
+        // Handle invalid input
+    }
     // Set the frequency on the CC1101 chip
     cc1101_set_frequency(frequency);
 }
@@ -101,7 +105,7 @@ void send_file()
     f_read(&file, buffer, sizeof(buffer), &bytes_read);
     f_close(&file);
 
-        // Transmit the contents of the file using the CC1101 chip
+    // Transmit the contents of the file using the CC1101 chip
     cc1101_transmit(buffer, bytes_read);
 
     // Display a message to the user indicating that the transmission is complete
@@ -113,75 +117,66 @@ void send_file()
 
 void read_signals()
 {
-    // Set the recording flag and start reading signals
+    // Set the recording flag to true
     recording = true;
+
+    // Display a message to the user indicating that the recording has started
+    u8g2_clear_buffer(&u8g2);
+    u8g2_draw_string(&u8g2, 0, 0, "Recording started.");
+    u8g2_send_buffer(&u8g2);
+
+    // Initialize a buffer to hold the recorded signals
+    char buffer[1024];
+    int bytes_read = 0;
+
+    // Keep reading signals until the recording flag is set to false
     while (recording)
     {
-        // Read a signal using the CC1101 chip and save it to a buffer
-        char buffer[1024];
-        int bytes_read = cc1101_receive(buffer, sizeof(buffer));
-        // Add the signal to a list of recorded signals
-        add_to_signal_list(buffer, bytes_read);
-
-        // Check if the user has requested to stop recording or save the signals
-        int input = get_user_input();
-        if (input == SAVE_SIGNALS)
+        // Read a signal using the CC1101 chip
+        int signal = cc1101_receive();
+        if (signal != -1)
         {
-            save_signals();
-            recording = false;
-        }
-        else if (input == RETURN_WITHOUT_SAVING)
-        {
-            recording = false;
+            // Add the signal to the buffer
+            buffer[bytes_read] = (char)signal;
+            bytes_read++;
         }
     }
+
+    // Save the recorded signals to a file
+    save_signals(buffer, bytes_read);
+
+    // Display a message to the user indicating that the recording is complete
+    u8g2_clear_buffer(&u8g2);
+    u8g2_draw_string(&u8g2, 0, 0, "Recording complete.");
+    u8g2_send_buffer(&u8g2);
+    delay(1000); // Wait for 1 second before returning to the main menu
 }
 
-
-void save_signals()
+void save_signals(char *buffer, int bytes_read)
 {
-    // Use the FatFs library to create a new file and write the recorded signals to it
+    // Use the FatFs and FreeRTOS libraries to save the recorded signals to a file
     FRESULT res;
-    FIL file;
-    res = f_open(&file, "signals.txt", FA_CREATE_ALWAYS | FA_WRITE);
+    DIR dir;
+    static FILINFO fno;
+
+    // Select a file using the FatFs and FreeRTOS libraries
+    strcpy(file_name, ""); // Clear the file name
+    res = select_file_from_storage(&dir, &fno, file_name);
     if (res != FR_OK)
     {
-        // An error occurred while trying to create the file
+        // An error occurred while trying to select a file
         return;
     }
 
-// Write the recorded signals to the file
-    int bytes_written;
-    f_write(&file, recorded_signals, strlen(recorded_signals), &bytes_written);
+    // Open the file and write the recorded signals to it
+    FIL file;
+    res = f_open(&file, file_name, FA_WRITE | FA_CREATE_ALWAYS);
+    if (res != FR_OK)
+    {
+        // An error occurred while trying to open the file
+        return;
+    }
+    UINT bytes_written;
+    f_write(&file, buffer, bytes_read, &bytes_written);
     f_close(&file);
-}
-
-int get_user_input()
-{
-    // Poll the button inputs and return the corresponding value
-    if (button_pressed(BUTTON_OK))
-    {
-        return SAVE_SIGNALS;
-    }
-    else if (button_long_pressed(BUTTON_RETURN))
-    {
-        return RETURN_WITHOUT_SAVING;
-    }
-    // Add additional checks for other buttons as needed
-    return NO_INPUT;
-}
-
-bool button_long_pressed(int button)
-{
-    // Check the input of the specified button if it is pressed for a long time, false if not
-    if (button == BUTTON_RETURN)
-    {
-        if (GPIO_ReadInputDataBit(GPIO_RETURN) == Bit_SET)
-        {
-            delay(1000); // Wait for 1 second to detect a long press
-            return (GPIO_ReadInputDataBit(GPIO_RETURN) == Bit_SET);
-        }
-    }
-    // Add checks for other buttons as needed
-    return false;
 }
