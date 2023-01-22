@@ -222,22 +222,39 @@ void save_signals(char *buffer, int bytes_read)
 
 int get_user_input()
 {
-    // Read the user input from the OK, UP, DOWN, and BACK buttons
-    // Return 0 if OK is pressed, 1 if UP is pressed, 2 if DOWN is pressed, and 3 if BACK is pressed
-    // Add code here to read the input from the buttons
+    // Poll the button inputs and return the corresponding value
+    if (button_pressed(BUTTON_OK))
+    {
+        return SAVE_SIGNALS;
+    }
+    else if (button_long_pressed(BUTTON_RETURN))
+    {
+        return RETURN_WITHOUT_SAVING;
+    }
+    // Add additional checks for other buttons as needed
+    return NO_INPUT;
 }
 
+bool button_long_pressed(int button)
+{
+    // Check the input of the specified button if it is pressed for a long time, false if not
+    if (button == BUTTON_RETURN)
+    {
+        if (GPIO_ReadInputDataBit(GPIO_RETURN) == Bit_SET)
+        {
+            delay(1000); // Wait for 1 second to detect a long press
+            return (GPIO_ReadInputDataBit(GPIO_RETURN) == Bit_SET);
+        }
+    }
+    // Add checks for other buttons as needed
+    return false;
+}
 int cc1101_init()
 {
     // Initialize the CC1101 chip and return 1 if successful, 0 if unsuccessful
     // Add code here to initialize the CC1101 chip
 }
 
-int stm32wb55_init()
-{
-    // Initialize the STM32WB55 and return 1 if successful, 0 if unsuccessful
-    // Add code here to initialize the STM32WB55
-}
 
 void u8g2_init(u8g2_t *u8g2, ...)
 {
