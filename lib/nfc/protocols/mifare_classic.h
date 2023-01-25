@@ -4,6 +4,12 @@
 
 #include "crypto1.h"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #define MF_CLASSIC_BLOCK_SIZE (16)
 #define MF_CLASSIC_TOTAL_BLOCKS_MAX (256)
 #define MF_MINI_TOTAL_SECTORS_NUM (5)
@@ -152,7 +158,7 @@ MfClassicSectorTrailer*
 
 void mf_classic_auth_init_context(MfClassicAuthContext* auth_ctx, uint8_t sector);
 
-bool mf_classic_authenticate(
+extern bool mf_classic_authenticate(
     FuriHalNfcTxRxContext* tx_rx,
     uint8_t block_num,
     uint64_t key,
@@ -200,3 +206,8 @@ bool mf_classic_write_sector(
     MfClassicData* dest_data,
     MfClassicData* src_data,
     uint8_t sec_num);
+
+
+#ifdef __cplusplus
+}
+#endif
