@@ -768,7 +768,7 @@ Function,+,elements_string_fit_width,void,"Canvas*, FuriString*, uint8_t"
 Function,+,elements_text_box,void,"Canvas*, uint8_t, uint8_t, uint8_t, uint8_t, Align, Align, const char*, _Bool"
 Function,+,empty_screen_alloc,EmptyScreen*,
 Function,+,empty_screen_free,void,EmptyScreen*
-Function,-,empty_screen_get_view,View*,EmptyScreen*
+Function,+,empty_screen_get_view,View*,EmptyScreen*
 Function,-,emv_card_emulation,_Bool,FuriHalNfcTxRxContext*
 Function,-,emv_read_bank_card,_Bool,"FuriHalNfcTxRxContext*, EmvApplication*"
 Function,-,erand48,double,unsigned short[3]
