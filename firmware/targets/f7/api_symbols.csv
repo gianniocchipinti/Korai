@@ -3796,3 +3796,6 @@ Variable,+,furi_hal_spi_sw_bus,FuriHalSpiBus,
 Variable,+,furi_hal_spi_sw_bus_handle_subghz_ext,FuriHalSpiBusHandle,
 Variable,+,subghz_g0_pin,const GpioPin*,
 Variable,+,subghz_spi_handle,FuriHalSpiBusHandle*,
+Header,+,firmware/targets/f7/furi_hal/furi_hal_spi_sw_config.h,,
+Function,+,furi_hal_subghz_is_internal_cc1101,_Bool,
+nction,+,furi_hal_subghz_set_internal_cc1101,_Bool,_Bool
