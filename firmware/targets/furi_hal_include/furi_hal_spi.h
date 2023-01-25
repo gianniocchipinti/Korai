@@ -1,5 +1,5 @@
 #pragma once
-include <furi_hal_spi_sw_config.h>
+#include <furi_hal_spi_sw_config.h>
 #include <furi_hal_spi_config.h>
 #include <stdbool.h>
 
