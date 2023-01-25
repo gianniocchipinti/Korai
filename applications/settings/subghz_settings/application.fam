@@ -1,4 +1,5 @@
-  appid="subghz_settings",
+App(
+    appid="subghz_settings",
     name="Subghz",
     apptype=FlipperAppType.SETTINGS,
     entry_point="subghz_settings_app",
