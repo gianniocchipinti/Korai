@@ -156,10 +156,12 @@ bool furi_hal_spi_bus_tx(
         }
     }
 
-    
+    }
 
     return ret;
 }
+
+
 
 bool furi_hal_spi_bus_trx(
     FuriHalSpiBusHandle* handle,
@@ -221,6 +223,7 @@ bool furi_hal_spi_bus_trx(
 
             }
         }
+    }
     }
 
     
