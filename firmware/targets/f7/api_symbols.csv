@@ -151,6 +151,13 @@ Header,+,lib/mbedtls/include/mbedtls/des.h,,
 Header,+,lib/mbedtls/include/mbedtls/sha1.h,,
 Header,+,lib/micro-ecc/uECC.h,,
 Header,+,lib/nfc/nfc_device.h,,
+
+
+Header,+,lib/nfc/protocols/mifare_classic.h,,
+Header,+,lib/nfc/protocols/mifare_desfire.h,,
+Header,+,lib/nfc/protocols/mifare_ultralight.h,,
+Header,+,lib/nfc/helpers/mf_classic_dict.h,,
+
 Header,+,lib/one_wire/ibutton/ibutton_worker.h,,
 Header,+,lib/one_wire/maxim_crc.h,,
 Header,+,lib/one_wire/one_wire_device.h,,
