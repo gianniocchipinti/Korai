@@ -4,6 +4,5 @@ App(
     apptype=FlipperAppType.METAPACKAGE,
     provides=[
         "music_player",
-        "snake_game",
     ],
 )
