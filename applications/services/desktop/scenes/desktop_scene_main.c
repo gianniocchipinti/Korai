@@ -9,12 +9,9 @@
 #include "../views/desktop_view_main.h"
 #include "desktop_scene.h"
 #include "desktop_scene_i.h"
+#include "../helpers/pin_lock.h"
 
 #define TAG "DesktopSrv"
-
-#define MUSIC_PLAYER_APP EXT_PATH("/apps/Misc/music_player.fap")
-#define SNAKE_GAME_APP EXT_PATH("/apps/Games/snake_game.fap")
-#define CLOCK_APP EXT_PATH("/apps/Tools/clock.fap")
 
 static void desktop_scene_main_new_idle_animation_callback(void* context) {
     furi_assert(context);
@@ -64,19 +61,6 @@ static void desktop_switch_to_app(Desktop* desktop, const FlipperApplication* fl
 }
 #endif
 
-static void desktop_scene_main_open_app_or_profile(Desktop* desktop, const char* path) {
-    do {
-        LoaderStatus status = loader_start(desktop->loader, FAP_LOADER_APP_NAME, path);
-        if(status == LoaderStatusOk) break;
-        FURI_LOG_E(TAG, "loader_start failed: %d", status);
-
-        status = loader_start(desktop->loader, "Passport", NULL);
-        if(status != LoaderStatusOk) {
-            FURI_LOG_E(TAG, "loader_start failed: %d", status);
-        }
-    } while(false);
-}
-
 void desktop_scene_main_callback(DesktopEvent event, void* context) {
     Desktop* desktop = (Desktop*)context;
     view_dispatcher_send_custom_event(desktop->view_dispatcher, event);
@@ -117,6 +101,17 @@ bool desktop_scene_main_on_event(void* context, SceneManagerEvent event) {
 
         case DesktopMainEventOpenDebug:
             scene_manager_next_scene(desktop->scene_manager, DesktopSceneDebug);
+            consumed = true;
+            break;
+
+        case DesktopMainEventLock:
+            if(desktop->settings.pin_code.length > 0) {
+                desktop_pin_lock(&desktop->settings);
+                desktop_lock(desktop);
+            } else {
+                scene_manager_set_scene_state(desktop->scene_manager, DesktopSceneLockMenu, 0);
+                desktop_lock(desktop);
+            }
             consumed = true;
             break;
 
@@ -198,16 +193,52 @@ bool desktop_scene_main_on_event(void* context, SceneManagerEvent event) {
             }
             break;
         }
-        case DesktopMainEventOpenGame: {
-            desktop_scene_main_open_app_or_profile(desktop, SNAKE_GAME_APP);
+        case DesktopMainEventOpenGameMenu: {
+            LoaderStatus status = loader_start(
+                desktop->loader, FAP_LOADER_APP_NAME, EXT_PATH("/apps/Games/Snake.fap"));
+            if(status != LoaderStatusOk) {
+                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+            }
             break;
         }
-        case DesktopMainEventOpenClock: {
-            desktop_scene_main_open_app_or_profile(desktop, CLOCK_APP);
+        case DesktopMainEventOpenTetris: {
+            LoaderStatus status = loader_start(
+                desktop->loader, FAP_LOADER_APP_NAME, EXT_PATH("/apps/Games/Tetris.fap"));
+            if(status != LoaderStatusOk) {
+                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+            }
             break;
         }
-        case DesktopMainEventOpenMusicPlayer: {
-            desktop_scene_main_open_app_or_profile(desktop, MUSIC_PLAYER_APP);
+        case DesktopMainEventOpenArkanoid: {
+            LoaderStatus status = loader_start(
+                desktop->loader, FAP_LOADER_APP_NAME, EXT_PATH("/apps/Games/Arkanoid.fap"));
+            if(status != LoaderStatusOk) {
+                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+            }
+            break;
+        }
+        case DesktopMainEventOpenDOOM: {
+            LoaderStatus status = loader_start(
+                desktop->loader, FAP_LOADER_APP_NAME, EXT_PATH("/apps/Games/DOOM.fap"));
+            if(status != LoaderStatusOk) {
+                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+            }
+            break;
+        }
+        case DesktopMainEventOpenZombiez: {
+            LoaderStatus status = loader_start(
+                desktop->loader, FAP_LOADER_APP_NAME, EXT_PATH("/apps/Games/Zombiez.fap"));
+            if(status != LoaderStatusOk) {
+                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+            }
+            break;
+        }
+        case DesktopMainEventOpenHeap: {
+            LoaderStatus status = loader_start(
+                desktop->loader, FAP_LOADER_APP_NAME, EXT_PATH("/apps/Games/heap_defence.fap"));
+            if(status != LoaderStatusOk) {
+                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+            }
             break;
         }
         case DesktopLockedEventUpdate:
