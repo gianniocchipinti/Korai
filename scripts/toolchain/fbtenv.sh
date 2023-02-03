@@ -43,9 +43,11 @@ fbtenv_restore_env()
 
     PYTHONNOUSERSITE="$SAVED_PYTHONNOUSERSITE";
     PYTHONPATH="$SAVED_PYTHONPATH";
+    PYTHONHOME="$SAVED_PYTHONHOME";
 
     unset SAVED_PYTHONNOUSERSITE;
     unset SAVED_PYTHONPATH;
+    unset SAVED_PYTHONHOME;
 
     unset SCRIPT_PATH;
     unset FBT_TOOLCHAIN_VERSION;
@@ -69,7 +71,7 @@ fbtenv_check_sourced()
     return 1;
 }
 
-fbtenv_chck_many_source()
+fbtenv_check_if_sourced_multiple_times()
 {
     if ! echo "${PS1:-""}" | grep -qF "[fbt]"; then
         if ! echo "${PROMPT:-""}" | grep -qF "[fbt]"; then
@@ -114,10 +116,20 @@ fbtenv_get_kernel_type()
     if [ "$SYS_TYPE" = "Darwin" ]; then
         fbtenv_check_rosetta || return 1;
         TOOLCHAIN_ARCH_DIR="$FBT_TOOLCHAIN_PATH/toolchain/x86_64-darwin";
-        TOOLCHAIN_URL="https://update.flipperzero.one/builds/toolchain/gcc-arm-none-eabi-10.3-x86_64-darwin-flipper-$FBT_TOOLCHAIN_VERSION.tar.gz";
+        if [ -z "${FBT_TOOLS_CUSTOM_LINK:-}" ]; then
+            TOOLCHAIN_URL="https://update.flipperzero.one/builds/toolchain/gcc-arm-none-eabi-10.3-x86_64-darwin-flipper-$FBT_TOOLCHAIN_VERSION.tar.gz";
+        else
+            echo "info: custom toolchain link is used";
+            TOOLCHAIN_URL=$FBT_TOOLS_CUSTOM_LINK;
+        fi
     elif [ "$SYS_TYPE" = "Linux" ]; then
         TOOLCHAIN_ARCH_DIR="$FBT_TOOLCHAIN_PATH/toolchain/x86_64-linux";
-        TOOLCHAIN_URL="https://update.flipperzero.one/builds/toolchain/gcc-arm-none-eabi-10.3-x86_64-linux-flipper-$FBT_TOOLCHAIN_VERSION.tar.gz";
+        if [ -z "${FBT_TOOLS_CUSTOM_LINK:-}" ]; then
+            TOOLCHAIN_URL="https://update.flipperzero.one/builds/toolchain/gcc-arm-none-eabi-10.3-x86_64-linux-flipper-$FBT_TOOLCHAIN_VERSION.tar.gz";
+        else
+            echo "info: custom toolchain link is used";
+            TOOLCHAIN_URL=$FBT_TOOLS_CUSTOM_LINK;
+        fi
     elif echo "$SYS_TYPE" | grep -q "MINGW"; then
         echo "In MinGW shell use \"[u]fbt.cmd\" instead of \"[u]fbt\"";
         return 1;
@@ -275,7 +287,7 @@ fbtenv_main()
         fbtenv_restore_env;
         return 0;
     fi
-    fbtenv_chck_many_source;  # many source it's just a warning
+    fbtenv_check_if_sourced_multiple_times;  # many source it's just a warning
     fbtenv_check_script_path || return 1;
     fbtenv_check_download_toolchain || return 1;
     fbtenv_set_shell_prompt;
@@ -283,12 +295,14 @@ fbtenv_main()
     PATH="$TOOLCHAIN_ARCH_DIR/bin:$PATH";
     PATH="$TOOLCHAIN_ARCH_DIR/protobuf/bin:$PATH";
     PATH="$TOOLCHAIN_ARCH_DIR/openocd/bin:$PATH";
-    
+
     SAVED_PYTHONNOUSERSITE="${PYTHONNOUSERSITE:-""}";
     SAVED_PYTHONPATH="${PYTHONPATH:-""}";
+    SAVED_PYTHONHOME="${PYTHONHOME:-""}";
 
     PYTHONNOUSERSITE=1;
     PYTHONPATH=;
+    PYTHONHOME=;
 }
 
 fbtenv_main "${1:-""}";
