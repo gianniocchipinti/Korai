@@ -38,6 +38,13 @@
 #include "ansonic.h"
 #include "smc5326.h"
 #include "holtek_ht12x.h"
-#include "dooya.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern const SubGhzProtocolRegistry subghz_protocol_registry;
+
+#ifdef __cplusplus
+}
+#endif
