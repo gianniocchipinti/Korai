@@ -1,8 +1,7 @@
 App(
     appid="nfc",
     name="NFC",
-    apptype=FlipperAppType.EXTERNAL,
-    fap_category="Main",
+    apptype=FlipperAppType.APP,
     entry_point="nfc_app",
     cdefines=["APP_NFC"],
     requires=[

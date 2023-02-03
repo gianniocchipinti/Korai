@@ -14,7 +14,7 @@ void nfc_scene_emv_menu_submenu_callback(void* context, uint32_t index) {
 void nfc_scene_emv_menu_on_enter(void* context) {
     Nfc* nfc = context;
     Submenu* submenu = nfc->submenu;
-    
+
     submenu_add_item(submenu, "Save", SubmenuIndexSave, nfc_scene_emv_menu_submenu_callback, nfc);
     submenu_add_item(submenu, "Info", SubmenuIndexInfo, nfc_scene_emv_menu_submenu_callback, nfc);
     submenu_set_selected_item(
