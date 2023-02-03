@@ -8,7 +8,7 @@ App(
         #"infrared",
         #"lfrfid",
         #"nfc",
-        #"subghz",
+        "subghz",
         #"bad_usb",
         #"u2f",
         "fap_loader",
