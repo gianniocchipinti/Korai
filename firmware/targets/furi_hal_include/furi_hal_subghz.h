@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <toolbox/level_duration.h>
 #include <furi_hal_gpio.h>
-#include <furi_hal_spi.h>
+#include <furi_hal_spi_types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,21 +62,24 @@ typedef enum {
     SubGhzRegulationTxRx, /**TxRx*/
 } SubGhzRegulation;
 
-extern const GpioPin* subghz_g0_pin;
-extern FuriHalSpiBusHandle* subghz_spi_handle;
+/** SubGhz radio types */
+typedef enum {
+    SubGhzRadioInternal,
+    SubGhzRadioExternal,
+} SubGhzRadioType;
 
-/** Gets the internal/external cc1101 state.
- *
- * @return true if internal cc1101 is used.
- */
-bool furi_hal_subghz_is_internal_cc1101();
+/** Structure for accessing SubGhz settings*/
+typedef struct {
+    volatile SubGhzState state;
+    volatile SubGhzRegulation regulation;
+    volatile FuriHalSubGhzPreset preset;
+    const GpioPin* async_mirror_pin;
+    SubGhzRadioType radio_type;
+    FuriHalSpiBusHandle* spi_bus_handle;
+    const GpioPin* cc1101_g0_pin;
+} FuriHalSubGhz;
 
-/** Switches between internal and external cc1101.
- *
- * @param[in] true if internal cc1011 should be used, false for external.
- * @return true if switch was successfull, false if error occured and old value kept.
- */
-bool furi_hal_subghz_set_internal_cc1101(bool value);
+extern volatile FuriHalSubGhz furi_hal_subghz;
 
 /* Mirror RX/TX async modulation signal to specified pin
  *
@@ -92,6 +95,13 @@ void furi_hal_subghz_set_async_mirror_pin(const GpioPin* pin);
  * send it to sleep
  */
 void furi_hal_subghz_init();
+
+/** Initialize and switch to power save mode Used by internal API-HAL
+ * initialization routine Can be used to reinitialize device to safe state and
+ * send it to sleep
+ * @return     true if initialisation is successfully
+ */
+bool furi_hal_subghz_init_check(void);
 
 /** Send device to sleep mode
  */
@@ -212,6 +222,14 @@ bool furi_hal_subghz_is_frequency_valid(uint32_t value);
  */
 uint32_t furi_hal_subghz_set_frequency_and_path(uint32_t value);
 
+/** Сheck if transmission is allowed on this frequency with your current config
+ *
+ * @param      value  frequency in Hz
+ *
+ * @return     true if allowed
+ */
+bool furi_hal_subghz_is_tx_allowed(uint32_t value);
+
 /** Set frequency
  *
  * @param      value  frequency in Hz
@@ -266,6 +284,30 @@ bool furi_hal_subghz_is_async_tx_complete();
 /** Stop async transmission and cleanup resources Resets GPIO, TIM2, and DMA1
  */
 void furi_hal_subghz_stop_async_tx();
+
+/** Switching between internal and external radio
+ * @param      state SubGhzRadioInternal or SubGhzRadioExternal
+ * @return     true if switching is successful
+ */
+bool furi_hal_subghz_set_radio_type(SubGhzRadioType state);
+
+/** Get current radio
+ * @return     SubGhzRadioInternal or SubGhzRadioExternal
+ */
+SubGhzRadioType furi_hal_subghz_get_radio_type(void);
+
+/** Check for a radio module
+ * @return     true if check is successful
+ */
+bool furi_hal_subghz_check_radio(void);
+
+/** Turn on the power of the external radio module
+ */
+void furi_hal_subghz_enable_ext_power(void);
+
+/** Turn off the power of the external radio module
+ */
+void furi_hal_subghz_disable_ext_power(void);
 
 #ifdef __cplusplus
 }
