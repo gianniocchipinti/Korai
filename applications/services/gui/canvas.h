@@ -26,6 +26,7 @@ typedef enum {
     FontSecondary,
     FontKeyboard,
     FontBigNumbers,
+    FontBatteryPercent,
 
     // Keep last for fonts number calculation
     FontTotalNumber,
@@ -145,6 +146,13 @@ void canvas_invert_color(Canvas* canvas);
  * @param      font    Font
  */
 void canvas_set_font(Canvas* canvas, Font font);
+
+/** Set custom drawing font
+ *
+ * @param      canvas  Canvas instance
+ * @param      font    Pointer to u8g2 const uint8_t* font array
+ */
+void canvas_set_custom_u8g2_font(Canvas* canvas, const uint8_t* font);
 
 /** Draw string at position of baseline defined by x, y.
  *
@@ -371,6 +379,14 @@ void canvas_draw_rbox(
     uint8_t width,
     uint8_t height,
     uint8_t radius);
+
+void canvas_draw_icon_bitmap(
+    Canvas* canvas,
+    uint8_t x,
+    uint8_t y,
+    int16_t w,
+    int16_t h,
+    const Icon* icon);
 
 #ifdef __cplusplus
 }

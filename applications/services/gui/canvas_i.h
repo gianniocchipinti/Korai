@@ -8,6 +8,10 @@
 #include "canvas.h"
 #include <u8g2.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Canvas structure
  */
 struct Canvas {
@@ -76,3 +80,7 @@ void canvas_set_orientation(Canvas* canvas, CanvasOrientation orientation);
  * @return     CanvasOrientation
  */
 CanvasOrientation canvas_get_orientation(const Canvas* canvas);
+
+#ifdef __cplusplus
+}
+#endif
