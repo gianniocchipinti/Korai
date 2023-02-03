@@ -53,6 +53,7 @@ typedef enum {
     SubGhzLoadKeyStateUnknown,
     SubGhzLoadKeyStateOK,
     SubGhzLoadKeyStateParseErr,
+    SubGhzLoadKeyStateOnlyRx,
 } SubGhzLoadKeyState;
 
 /** SubGhzLock */
@@ -66,6 +67,7 @@ typedef enum {
     SubGhzViewIdReceiver,
     SubGhzViewIdPopup,
     SubGhzViewIdTextInput,
+    SubGhzViewIdByteInput,
     SubGhzViewIdWidget,
     SubGhzViewIdTransmitter,
     SubGhzViewIdVariableItemList,
@@ -76,3 +78,8 @@ typedef enum {
     SubGhzViewIdTestCarrier,
     SubGhzViewIdTestPacket,
 } SubGhzViewId;
+
+typedef enum {
+    SubGhzViewReceiverModeLive,
+    SubGhzViewReceiverModeFile,
+} SubGhzViewReceiverMode;

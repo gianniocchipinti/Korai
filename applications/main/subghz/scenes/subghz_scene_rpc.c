@@ -1,4 +1,6 @@
 #include "../subghz_i.h"
+#include <lib/subghz/protocols/keeloq.h>
+#include <lib/subghz/protocols/star_line.h>
 
 typedef enum {
     SubGhzRpcStateIdle,
@@ -47,7 +49,7 @@ bool subghz_scene_rpc_on_event(void* context, SceneManagerEvent event) {
                 rpc_system_app_set_error_code(subghz->rpc_ctx, SubGhzErrorTypeOnlyRX);
                 rpc_system_app_set_error_text(
                     subghz->rpc_ctx,
-                    "Transmission on this frequency is restricted in your region");
+                    "Transmission on this frequency is restricted in your settings");
             }
             rpc_system_app_confirm(subghz->rpc_ctx, RpcAppEventButtonPress, result);
         } else if(event.event == SubGhzCustomEventSceneRpcButtonRelease) {
@@ -105,4 +107,9 @@ void subghz_scene_rpc_on_exit(void* context) {
     popup_set_header(popup, NULL, 0, 0, AlignCenter, AlignBottom);
     popup_set_text(popup, NULL, 0, 0, AlignCenter, AlignTop);
     popup_set_icon(popup, 0, 0, NULL);
+
+    keeloq_reset_mfname();
+    keeloq_reset_kl_type();
+    star_line_reset_mfname();
+    star_line_reset_kl_type();
 }
