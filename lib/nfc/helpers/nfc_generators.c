@@ -384,6 +384,7 @@ void nfc_generate_mf_classic(NfcDeviceData* data, uint8_t uid_len, MfClassicType
         // Set SAK to 09
         data->nfc_data.sak = 0x09;
     }
+
     nfc_generate_mf_classic_block_0(
         data->mf_classic_data.block[0].value,
         uid_len,

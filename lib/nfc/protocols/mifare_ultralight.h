@@ -2,12 +2,6 @@
 
 #include <furi_hal_nfc.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 // Largest tag is NTAG I2C Plus 2K, both data sectors plus SRAM
 #define MF_UL_MAX_DUMP_SIZE ((238 + 256 + 16) * 4)
 
@@ -260,8 +254,3 @@ uint32_t mf_ul_pwdgen_amiibo(FuriHalNfcDevData* data);
 uint32_t mf_ul_pwdgen_xiaomi(FuriHalNfcDevData* data);
 
 bool mf_ul_is_full_capture(MfUltralightData* data);
-
-
-#ifdef __cplusplus
-}
-#endif

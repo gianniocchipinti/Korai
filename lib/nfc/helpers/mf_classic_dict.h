@@ -6,11 +6,6 @@
 #include <lib/toolbox/stream/file_stream.h>
 #include <lib/toolbox/stream/buffered_file_stream.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef enum {
     MfClassicDictTypeUser,
     MfClassicDictTypeSystem,
@@ -69,7 +64,7 @@ bool mf_classic_dict_get_next_key_str(MfClassicDict* dict, FuriString* key);
  */
 bool mf_classic_dict_get_key_at_index(MfClassicDict* dict, uint64_t* key, uint32_t target);
 
-/** Get key at target offset as string_t
+/** Get key at target offset as FuriString*
  *
  * @param      dict    MfClassicDict instance
  * @param[out] key     Found key destination buffer
@@ -102,9 +97,3 @@ bool mf_classic_dict_find_index_str(MfClassicDict* dict, FuriString* key, uint32
  * @return     true on success
  */
 bool mf_classic_dict_delete_index(MfClassicDict* dict, uint32_t target);
-
-
-
-#ifdef __cplusplus
-}
-#endif

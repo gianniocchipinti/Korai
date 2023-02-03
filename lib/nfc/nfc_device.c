@@ -679,7 +679,6 @@ static bool nfc_device_save_bank_card_data(FlipperFormat* file, NfcDevice* dev) 
     return saved;
 }
 
-// Leave for backward compatibility
 bool nfc_device_load_bank_card_data(FlipperFormat* file, NfcDevice* dev) {
     bool parsed = false;
     EmvData* data = &dev->dev_data.emv_data;
@@ -773,6 +772,7 @@ static bool nfc_device_save_mifare_classic_data(FlipperFormat* file, NfcDevice* 
     // Save Mifare Classic specific data
     do {
         if(!flipper_format_write_comment_cstr(file, "Mifare Classic specific data")) break;
+
         if(data->type == MfClassicTypeMini) {
             if(!flipper_format_write_string_cstr(file, "Mifare Classic type", "MINI")) break;
             blocks = 20;
@@ -890,7 +890,7 @@ static bool nfc_device_load_mifare_classic_data(FlipperFormat* file, NfcDevice* 
         bool old_format = false;
         // Read Mifare Classic format version
         if(!flipper_format_read_uint32(file, "Data format version", &data_format_version, 1)) {
-            // Load unread sectors with zero keys access for backward compatability
+            // Load unread sectors with zero keys access for backward compatibility
             if(!flipper_format_rewind(file)) break;
             old_format = true;
         } else {
@@ -1004,9 +1004,9 @@ bool nfc_device_load_key_cache(NfcDevice* dev) {
         if(furi_string_cmp_str(temp_str, nfc_keys_file_header)) break;
         if(version != nfc_keys_file_version) break;
         if(!flipper_format_read_string(file, "Mifare Classic type", temp_str)) break;
-        if(data->type == MfClassicTypeMini) {
-            if(!flipper_format_write_string_cstr(file, "Mifare Classic type", "MINI")) break;
-        } else if(data->type == MfClassicType1k) {
+        if(!furi_string_cmp(temp_str, "MINI")) {
+            data->type = MfClassicTypeMini;
+        } else if(!furi_string_cmp(temp_str, "1K")) {
             data->type = MfClassicType1k;
         } else if(!furi_string_cmp(temp_str, "4K")) {
             data->type = MfClassicType4k;
@@ -1097,7 +1097,7 @@ bool nfc_device_save(NfcDevice* dev, const char* dev_name) {
         if(!flipper_format_write_header_cstr(file, nfc_file_header, nfc_file_version)) break;
         // Write nfc device type
         if(!flipper_format_write_comment_cstr(
-               file, "Nfc device type can be UID, Mifare Ultralight, Mifare Classic, Bank Card"))
+               file, "Nfc device type can be UID, Mifare Ultralight, Mifare Classic, Bank card"))
             break;
         nfc_device_prepare_format_string(dev, temp_str);
         if(!flipper_format_write_string(file, "Device type", temp_str)) break;
@@ -1165,7 +1165,7 @@ static bool nfc_device_load_data(NfcDevice* dev, FuriString* path, bool show_dia
     }
 
     do {
-        // Check existance of shadow file
+        // Check existence of shadow file
         nfc_device_get_shadow_path(path, temp_str);
         dev->shadow_file_exist =
             storage_common_stat(dev->storage, furi_string_get_cstr(temp_str), NULL) == FSE_OK;
