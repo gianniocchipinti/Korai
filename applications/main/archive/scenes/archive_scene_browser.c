@@ -19,8 +19,8 @@ static const char* flipper_app_name[] = {
     [ArchiveFileTypeInfrared] = "Infrared",
     [ArchiveFileTypeBadUsb] = "Bad USB",
     [ArchiveFileTypeU2f] = "U2F",
-    [ArchiveFileTypeUpdateManifest] = "UpdaterApp",
     [ArchiveFileTypeApplication] = "Applications",
+    [ArchiveFileTypeUpdateManifest] = "UpdaterApp",
 };
 
 static void archive_loader_callback(const void* message, void* context) {
@@ -45,7 +45,6 @@ static void archive_run_in_app(ArchiveBrowserView* browser, ArchiveFile_t* selec
         if(param != NULL) {
             param++;
         }
-        
         status = loader_start(loader, flipper_app_name[selected->type], param);
     } else {
         status = loader_start(
@@ -134,12 +133,28 @@ bool archive_scene_browser_on_event(void* context, SceneManagerEvent event) {
         case ArchiveBrowserEventFileMenuRename:
             if(favorites) {
                 browser->callback(ArchiveBrowserEventEnterFavMove, browser->context);
-            } else if(selected->is_app == false) {
+                //} else if((archive_is_known_app(selected->type)) && (selected->is_app == false)) {
+            } else {
+                // Added ability to rename files and folders
                 archive_show_file_menu(browser, false);
                 scene_manager_set_scene_state(
                     archive->scene_manager, ArchiveAppSceneBrowser, SCENE_STATE_NEED_REFRESH);
                 scene_manager_next_scene(archive->scene_manager, ArchiveAppSceneRename);
             }
+            consumed = true;
+            break;
+        case ArchiveBrowserEventFileMenuInfo:
+            archive_show_file_menu(browser, false);
+            scene_manager_set_scene_state(
+                archive->scene_manager, ArchiveAppSceneBrowser, SCENE_STATE_DEFAULT);
+            scene_manager_next_scene(archive->scene_manager, ArchiveAppSceneInfo);
+            consumed = true;
+            break;
+        case ArchiveBrowserEventFileMenuShow:
+            archive_show_file_menu(browser, false);
+            scene_manager_set_scene_state(
+                archive->scene_manager, ArchiveAppSceneBrowser, SCENE_STATE_DEFAULT);
+            scene_manager_next_scene(archive->scene_manager, ArchiveAppSceneShow);
             consumed = true;
             break;
         case ArchiveBrowserEventFileMenuDelete:

@@ -64,13 +64,7 @@ static void
         archive_add_file_item(browser, is_folder, furi_string_get_cstr(item_path));
     } else {
         with_view_model(
-            browser->view,
-            ArchiveBrowserViewModel * model,
-            {
-                files_array_sort(model->files);
-                model->list_loading = false;
-            },
-            true);
+            browser->view, ArchiveBrowserViewModel * model, { model->list_loading = false; }, true);
     }
 }
 
@@ -413,6 +407,7 @@ void archive_show_file_menu(ArchiveBrowserView* browser, bool show) {
                 if(archive_is_item_in_array(model, model->item_idx)) {
                     model->menu = true;
                     model->menu_idx = 0;
+                    menu_array_reset(model->context_menu);
                     ArchiveFile_t* selected =
                         files_array_get(model->files, model->item_idx - model->array_offset);
                     selected->fav =
